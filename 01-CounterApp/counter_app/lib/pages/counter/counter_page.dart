@@ -19,6 +19,8 @@ class CounterPage extends StatelessWidget {
         },
       ),
       floatingActionButton: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
