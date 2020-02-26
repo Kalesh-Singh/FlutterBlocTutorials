@@ -4,7 +4,7 @@ import 'package:timer_app/bloc/timer/timer_bloc.dart';
 import 'package:timer_app/bloc/timer/timer_event.dart';
 import 'package:timer_app/bloc/timer/timer_state.dart';
 
-class Actions extends StatelessWidget {
+class TimerActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
