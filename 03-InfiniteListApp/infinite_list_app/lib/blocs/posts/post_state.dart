@@ -1,6 +1,21 @@
 import 'package:equatable/equatable.dart';
 import 'package:infinitelistapp/data/posts/models/post_model.dart';
 
+/*
+PostUninitialized- will tell the presentation layer it needs to render a loading
+                   indicator while the initial batch of posts are loaded.
+
+PostLoaded- will tell the presentation layer it has content to render.
+
+posts- will be the List<PostModel> which will be displayed.
+
+hasReachedMax- will tell the presentation layer whether or not it has reached
+               the maximum number of posts.
+
+PostError- will tell the presentation layer that an error has occurred
+           while fetching posts.
+ */
+
 abstract class PostState extends Equatable {
   const PostState();
 
