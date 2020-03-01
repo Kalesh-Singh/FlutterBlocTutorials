@@ -1,4 +1,4 @@
-# newsapp
+# numbertriviaapp
 
 A new Flutter application.
 

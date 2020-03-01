@@ -1,4 +1,4 @@
-package com.ninja.newsapp
+package com.ninja.numbertriviaapp
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
