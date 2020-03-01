@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:infinitelistapp/data/posts/models/post_model.dart';
@@ -16,6 +18,20 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   @override
   PostState get initialState => PostUninitialized();
 
+  // To prevent spamming the API
+  @override
+  Stream<PostState> transformEvents(
+      Stream<PostEvent> events,
+      Stream<PostState> Function(PostEvent event) next,
+      ) {
+    return super.transformEvents(
+      events.debounceTime(
+        Duration(milliseconds: 500),
+      ),
+      next,
+    );
+  }
+
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
     final currentState = state;
@@ -31,7 +47,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           yield posts.isEmpty
               ? currentState.copyWith(hasReachedMax: true)
               : PostLoaded(
-            posts: currentState.posts + posts, hasReachedMax: false,);
+                  posts: currentState.posts + posts,
+                  hasReachedMax: false,
+                );
         }
       } catch (_) {
         yield PostError();
@@ -39,12 +57,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  bool _hasReachedMax(PostState state) => state is PostLoaded && state.hasReachedMax;
+  bool _hasReachedMax(PostState state) =>
+      state is PostLoaded && state.hasReachedMax;
 
   Future<List<PostModel>> _fetchPosts(int startIndex, int limit) async {
     final response = await httpClient.get(
-      'https://jsonplaceholder.typicode.com/posts?_start=$startIndex&_limit=$limit'
-    );
+        'https://jsonplaceholder.typicode.com/posts?_start=$startIndex&_limit=$limit');
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as List;
       return data.map((rawPost) {
