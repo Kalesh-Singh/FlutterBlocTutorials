@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:numbertriviaapp/core/error/failure.dart';
+import 'package:numbertriviaapp/core/error/failures.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/entities/number_trivia.dart';
 
 abstract class NumberTriviaRepository {
