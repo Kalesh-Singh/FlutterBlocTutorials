@@ -41,7 +41,8 @@ void main() {
       expect(result, equals(tNumberTriviaModel));
     });
 
-    test('should throw a CacheException when there is not a cached value', () async {
+    test('should throw a CacheException when there is not a cached value',
+        () async {
       // arrange
       when(mockSharedPreferences.getString(any)).thenReturn(null);
 
@@ -53,4 +54,31 @@ void main() {
       verify(mockSharedPreferences.getString(CACHED_NUMBER_TRIVIA));
     });
   });
+
+  group('cacheNumberTrivia', () {
+    final tNumber = 1;
+    final tText = 'Test Text';
+    final tNumberTriviaModel = NumberTriviaModel(number: tNumber, text: tText);
+
+    test('should call SharedPreferences to cache the data', () async {
+      // act
+      dataSource.cacheNumberTrivia(tNumberTriviaModel);
+
+      // assert
+      final expectedJsonString = json.encode(tNumberTriviaModel.toJson());
+      verify(mockSharedPreferences.setString(
+          CACHED_NUMBER_TRIVIA, expectedJsonString));
+    });
+  });
 }
+
+//test('', () async {
+//// arrange
+//
+//
+//// act
+//
+//
+//// assert
+//
+//});
