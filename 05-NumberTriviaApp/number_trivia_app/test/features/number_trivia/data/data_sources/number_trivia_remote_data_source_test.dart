@@ -34,7 +34,7 @@ void main() {
   group('getConcreteNumberTrivia', () {
     final tNumber = 1;
     final tNumberTriviaModel =
-        NumberTriviaModel.fromJson(json.decode(fixture('trivia.json')));
+    NumberTriviaModel.fromJson(json.decode(fixture('trivia.json')));
 
     test('''should perform a GET request on a URL with number 
         being the endpoint and with application/json header''', () async {
@@ -54,28 +54,75 @@ void main() {
     });
 
     test('should return NumberTrivia when the response code is 200 (success)',
+            () async {
+          // arrange
+          setUpMockHttpClientSuccess200();
+
+          // act
+          final result = await dataSource.getConcreteNumberTrivia(tNumber);
+
+          // assert
+          expect(result, equals(tNumberTriviaModel));
+        });
+
+    test(
+        'should throw ServerException when the response code is 404  or not 200 (unsuccessful)',
+            () async {
+          // arrange
+          setUpMockHttpClientFailure404();
+
+          // act
+          final call = dataSource.getConcreteNumberTrivia;
+
+          // assert
+          expect(() => call(tNumber), throwsA(TypeMatcher<ServerException>()));
+        });
+  });
+
+  group('getRandomNumberTrivia', () {
+    final tNumberTriviaModel =
+        NumberTriviaModel.fromJson(json.decode(fixture('trivia.json')));
+
+    test('''should perform a GET request on a URL with number 
+        being the endpoint and with application/json header''', () async {
+      // arrange
+      setUpMockHttpClientSuccess200();
+
+      // act
+      dataSource.getRandomNumberTrivia();
+
+      // assert
+      verify(mockHttpClient.get(
+        'http://numbersapi.com/random',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ));
+    });
+
+    test('should return NumberTrivia when the response code is 200 (success)',
         () async {
       // arrange
       setUpMockHttpClientSuccess200();
 
       // act
-      final result = await dataSource.getConcreteNumberTrivia(tNumber);
+      final result = await dataSource.getRandomNumberTrivia();
 
       // assert
       expect(result, equals(tNumberTriviaModel));
     });
 
     test(
-        'should throw ServerException when the response code is 4040  or not 200 (unsuccessful)',
+        'should throw ServerException when the response code is 404  or not 200 (unsuccessful)',
         () async {
       // arrange
       setUpMockHttpClientFailure404();
 
       // act
-      final call = dataSource.getConcreteNumberTrivia;
+      final call = dataSource.getRandomNumberTrivia;
 
       // assert
-      expect(() => call(tNumber), throwsA(TypeMatcher<ServerException>()));
+      expect(() => call(), throwsA(TypeMatcher<ServerException>()));
     });
   });
 }
