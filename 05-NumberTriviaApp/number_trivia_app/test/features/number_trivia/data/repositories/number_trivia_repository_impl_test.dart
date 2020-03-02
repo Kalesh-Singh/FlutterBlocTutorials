@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:numbertriviaapp/core/error/exceptions.dart';
+import 'package:numbertriviaapp/core/error/failures.dart';
 import 'package:numbertriviaapp/core/platform/network_info.dart';
 import 'package:numbertriviaapp/features/number_trivia/data/data_sources/number_trivia_local_data_source.dart';
 import 'package:numbertriviaapp/features/number_trivia/data/data_sources/number_trivia_remote_data_source.dart';
@@ -84,6 +86,22 @@ void main() {
         // assert
         verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
         verify(mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel));
+      });
+
+      test(
+          'should return server failure when the call to remote data source is unsuccessful',
+          () async {
+        // arrange
+        when(mockRemoteDataSource.getConcreteNumberTrivia(any))
+            .thenThrow(ServerException());
+
+        // act
+        final result = await repository.getConcreteNumberTrivia(tNumber);
+
+        // assert
+        verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
+        verifyZeroInteractions(mockLocalDataSource);
+        expect(result, equals(Left(ServerFailure())));
       });
     });
 
