@@ -17,6 +17,8 @@ dependencies:
   equatable: ^1.1.0
   # For functional programming Either<> type
   dartz: ^0.8.9
+  # To check for internet connection
+  data_connection_checker: ^0.3.4
 
   cupertino_icons: ^0.1.2
 
