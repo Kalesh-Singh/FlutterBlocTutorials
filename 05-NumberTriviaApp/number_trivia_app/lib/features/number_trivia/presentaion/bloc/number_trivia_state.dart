@@ -9,7 +9,7 @@ abstract class NumberTriviaState extends Equatable {
   List<Object> get props => [];
 }
 
-class TriviaInitial extends NumberTriviaState {}
+class TriviaUninitializedState extends NumberTriviaState {}
 
 class TriviaLoadInProgress extends NumberTriviaState {}
 
