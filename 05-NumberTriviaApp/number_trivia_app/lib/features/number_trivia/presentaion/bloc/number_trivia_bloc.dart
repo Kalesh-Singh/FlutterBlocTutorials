@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:numbertriviaapp/core/error/failures.dart';
+import 'package:numbertriviaapp/core/use_cases/use_case.dart';
 import 'package:numbertriviaapp/core/util/input_converter.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/use_cases/get_concrete_number_trivia.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/use_cases/get_random_number_trivia.dart';
@@ -46,17 +47,24 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
           final failureOrTrivia =
               await getConcreteNumberTrivia(Params(number: integer));
           yield failureOrTrivia.fold(
-            (failure) => TriviaLoadFailure(
-                message: _mapFailureToMessage(failure)),
+            (failure) =>
+                TriviaLoadFailure(message: _mapFailureToMessage(failure)),
             (trivia) => TriviaLoadSuccess(trivia: trivia),
           );
         },
+      );
+    } else if (event is RandomNumberTriviaRequested) {
+      yield TriviaLoadInProgress();
+      final failureOrTrivia = await getRandomNumberTrivia(NoParams());
+      yield failureOrTrivia.fold(
+        (failure) => TriviaLoadFailure(message: _mapFailureToMessage(failure)),
+        (trivia) => TriviaLoadSuccess(trivia: trivia),
       );
     }
   }
 
   String _mapFailureToMessage(Failure failure) {
-    switch(failure.runtimeType) {
+    switch (failure.runtimeType) {
       case ServerFailure:
         return SERVER_FAILURE_MESSAGE;
       case CacheFailure:

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:numbertriviaapp/core/error/failures.dart';
+import 'package:numbertriviaapp/core/use_cases/use_case.dart';
 import 'package:numbertriviaapp/core/util/input_converter.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/entities/number_trivia.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/use_cases/get_concrete_number_trivia.dart';
@@ -39,7 +40,7 @@ void main() {
     expect(bloc.initialState, equals(TriviaEmpty()));
   });
 
-  group('ConcreteNumberTriviaRequested', () {
+ group('ConcreteNumberTriviaRequested', () {
     final tNumberString = '1';
     final tNumberParsed = 1;
     final tText = 'Test text';
@@ -162,6 +163,91 @@ void main() {
 
       // act
       bloc.add(ConcreteNumberTriviaRequested(tNumberString));
+    });
+  });
+
+  group('RandomNumberTriviaRequested', () {
+    final tRandomNumber = 1;
+    final tText = 'Test text';
+    final tNumberTrivia = NumberTrivia(number: tRandomNumber, text: tText);
+
+    test('should get data from the getRandomNumberTrivia usecase', () async {
+      // arrange
+      when(mockGetRandomNumberTrivia(any))
+          .thenAnswer((_) async => Right(tNumberTrivia));
+
+      // act
+      bloc.add(RandomNumberTriviaRequested());
+      await untilCalled(mockGetRandomNumberTrivia(any));
+
+      // assert
+      verify(mockGetRandomNumberTrivia(NoParams()));
+    });
+
+    test('''should emit [TriviaLoadInProgress, TriviaLoadSuccess] states
+    when data is gotten successfully''', () async {
+      // arrange
+      when(mockGetRandomNumberTrivia(any))
+          .thenAnswer((_) async => Right(tNumberTrivia));
+
+      // assert later
+      final expectedStates = [
+        TriviaEmpty(),
+        TriviaLoadInProgress(),
+        TriviaLoadSuccess(trivia: tNumberTrivia),
+      ];
+
+      expectLater(
+        bloc.asBroadcastStream(),
+        emitsInOrder(expectedStates),
+      );
+
+      // act
+      bloc.add(RandomNumberTriviaRequested());
+    });
+
+    test('''should emit [TriviaLoadInProgress, TriviaLoadFailure] states
+    when getting data fails''', () async {
+      // arrange
+      when(mockGetRandomNumberTrivia(any))
+          .thenAnswer((_) async => Left(ServerFailure()));
+
+      // assert later
+      final expectedStates = [
+        TriviaEmpty(),
+        TriviaLoadInProgress(),
+        TriviaLoadFailure(message: SERVER_FAILURE_MESSAGE),
+      ];
+
+      expectLater(
+        bloc.asBroadcastStream(),
+        emitsInOrder(expectedStates),
+      );
+
+      // act
+      bloc.add(RandomNumberTriviaRequested());
+    });
+
+    test('''should emit [TriviaLoadInProgress, TriviaLoadFailure] with a proper
+    failure message for the error when getting data fails''', () async {
+      // arrange
+      when(mockGetRandomNumberTrivia(any))
+          .thenAnswer((_) async => Left(CacheFailure()));
+
+      // assert later
+      final expectedStates = [
+        TriviaEmpty(),
+        TriviaLoadInProgress(),
+        TriviaLoadFailure(message: CACHE_FAILURE_MESSAGE),
+      ];
+
+      expectLater(
+        bloc.asBroadcastStream(),
+        emitsInOrder(expectedStates),
+      );
+
+      // act
+      bloc.add(RandomNumberTriviaRequested());
     });
   });
 }
