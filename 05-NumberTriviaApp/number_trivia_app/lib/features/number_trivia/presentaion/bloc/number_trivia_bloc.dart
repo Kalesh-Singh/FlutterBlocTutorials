@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 import 'package:numbertriviaapp/core/error/failures.dart';
 import 'package:numbertriviaapp/core/use_cases/use_case.dart';
 import 'package:numbertriviaapp/core/util/input_converter.dart';
+import 'package:numbertriviaapp/features/number_trivia/domain/entities/number_trivia.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/use_cases/get_concrete_number_trivia.dart';
 import 'package:numbertriviaapp/features/number_trivia/domain/use_cases/get_random_number_trivia.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/bloc/number_trivia_event.dart';
@@ -46,21 +48,23 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
           yield TriviaLoadInProgress();
           final failureOrTrivia =
               await getConcreteNumberTrivia(Params(number: integer));
-          yield failureOrTrivia.fold(
-            (failure) =>
-                TriviaLoadFailure(message: _mapFailureToMessage(failure)),
-            (trivia) => TriviaLoadSuccess(trivia: trivia),
-          );
+          yield* _eitherLoadedOrFailureState(failureOrTrivia);
         },
       );
     } else if (event is RandomNumberTriviaRequested) {
       yield TriviaLoadInProgress();
       final failureOrTrivia = await getRandomNumberTrivia(NoParams());
-      yield failureOrTrivia.fold(
-        (failure) => TriviaLoadFailure(message: _mapFailureToMessage(failure)),
-        (trivia) => TriviaLoadSuccess(trivia: trivia),
-      );
+      yield* _eitherLoadedOrFailureState(failureOrTrivia);
     }
+  }
+
+  Stream<NumberTriviaState> _eitherLoadedOrFailureState(
+    Either<Failure, NumberTrivia> failureOrTrivia,
+  ) async* {
+    yield failureOrTrivia.fold(
+      (failure) => TriviaLoadFailure(message: _mapFailureToMessage(failure)),
+      (trivia) => TriviaLoadSuccess(trivia: trivia),
+    );
   }
 
   String _mapFailureToMessage(Failure failure) {
