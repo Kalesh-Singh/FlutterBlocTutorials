@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: Colors.deepOrange.shade800,
-        accentColor: Colors.deepOrange.shade600,
+        primaryColor: Colors.orange.shade800,
+        accentColor: Colors.orange.shade600,
       ),
       home: NumberTriviaPage(),
     );

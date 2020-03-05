@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/bloc/number_trivia_bloc.dart';
+import 'package:numbertriviaapp/features/number_trivia/presentaion/bloc/number_trivia_event.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/bloc/number_trivia_state.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/widgets/loading_widget.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/widgets/message_display.dart';
+import 'package:numbertriviaapp/features/number_trivia/presentaion/widgets/trivia_controls.dart';
 import 'package:numbertriviaapp/features/number_trivia/presentaion/widgets/trivia_display.dart';
 
 import '../../../../injection_container.dart';
@@ -15,7 +17,9 @@ class NumberTriviaPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Number Trivia'),
       ),
-      body: _buildBody(context),
+      body: SingleChildScrollView(
+        child: _buildBody(context),
+      ),
     );
   }
 
@@ -54,41 +58,3 @@ class NumberTriviaPage extends StatelessWidget {
   }
 }
 
-class TriviaControls extends StatefulWidget {
-  const TriviaControls({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  _TriviaControlsState createState() => _TriviaControlsState();
-}
-
-class _TriviaControlsState extends State<TriviaControls> {
-  String inputStr;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Input a number',
-          ),
-          onChanged: (value) {
-            inputStr = value;
-          },
-        ),
-        SizedBox(height: 10),
-        // Buttons
-        Row(
-          children: <Widget>[
-            Expanded(child: Placeholder(fallbackHeight: 30)),
-            SizedBox(width: 10),
-            Expanded(child: Placeholder(fallbackHeight: 30)),
-          ],
-        ),
-      ],
-    );
-  }
-}
